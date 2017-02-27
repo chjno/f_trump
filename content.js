@@ -1,5 +1,5 @@
 var finger = chrome.extension.getURL('images/finger.png');
-var style = $('<style>.f-trump { cursor: url(' + finger + ') 12 2, auto; }</style>');
+var style = $('<style>.f-trump { cursor: url(' + finger + ') 12 2, auto !important; }</style>');
 $('head').append(style);
 
 $.expr[":"].Contains = $.expr.createPseudo(function(arg) {
@@ -17,9 +17,16 @@ function tagTrump(){
 }
 
 function observe(){
-  var observer = new MutationObserver(function (mutations) {
+
+  function process(){
     tagTrump();
-  });
+  }
+
+  var timeout;
+  function setDelay(){
+    clearTimeout(timeout);
+    timeout = setTimeout(process, 500);
+  }
 
   var config = {
     attributes: true,
@@ -27,6 +34,10 @@ function observe(){
     characterData: true,
     subtree: true
   };
+
+  var observer = new MutationObserver(function (mutations) {
+    setDelay();
+  });
 
   observer.observe(document, config);
 }
